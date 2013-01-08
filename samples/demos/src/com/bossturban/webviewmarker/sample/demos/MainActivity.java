@@ -1,6 +1,7 @@
-package com.bossturbo.webviewmarker.sample.demos;
+package com.bossturban.webviewmarker.sample.demos;
 
-import com.bossturbo.webviewmarker.TextSelectionSupport;
+import com.bossturban.webviewmarker.TextSelectionSupport;
+import com.bossturbo.webviewmarker.sample.demos.R;
 
 import android.app.Activity;
 import android.os.Bundle;

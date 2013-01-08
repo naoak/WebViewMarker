@@ -1,4 +1,4 @@
-package com.bossturbo.webviewmarker;
+package com.bossturban.webviewmarker;
 
 import android.webkit.JavascriptInterface;
 

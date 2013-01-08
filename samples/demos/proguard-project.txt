@@ -23,7 +23,7 @@
 
 -keepattributes JavascriptInterface
 
--keepclassmembers class com.bossturbo.webviewmarker.TextSelectionController {
+-keepclassmembers class com.bossturban.webviewmarker.TextSelectionController {
 	public *;
 }
 
