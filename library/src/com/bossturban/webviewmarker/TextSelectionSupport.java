@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.blahti.drag.DragController;
+import com.blahti.drag.DragController.DragBehavior;
 import com.blahti.drag.DragLayer;
 import com.blahti.drag.DragListener;
 import com.blahti.drag.DragSource;
@@ -27,9 +28,6 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
-/**
- * Ported from BTWebView
- */
 @SuppressLint("DefaultLocale")
 public class TextSelectionSupport implements TextSelectionControlListener, OnTouchListener, OnLongClickListener, DragListener {
 	public interface SelectionListener {
@@ -38,9 +36,12 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		void endSelection();
 	}
 	
+	private enum HandleType {
+		START,
+		END,
+		UNKNOWN
+	}
 	private static final String TAG = "SelectionSupport";
-	private final int SELECTION_START_HANDLE = 0;
-	private final int SELECTION_END_HANDLE = 1;
 	private final int SCROLLING_THRESHOLD = 10;
 	
 	private Activity mActivity;
@@ -53,9 +54,10 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 	private ImageView mStartSelectionHandle;
 	private ImageView mEndSelectionHandle;
 	private Rect mSelectionBounds = null;
+	private final Rect mSelectionBoundsTemp = new Rect();
 	private TextSelectionController mSelectionController = null;
 	private int mContentWidth = 0;
-	private int mLastTouchedSelectionHandle = -1;
+	private HandleType mLastTouchedSelectionHandle = HandleType.UNKNOWN;
 	private boolean mScrolling = false;
 	private float mScrollDiffY = 0;
 	private float mLastTouchY = 0;
@@ -84,7 +86,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		public void run() {
 			mWebView.removeView(mSelectionDragLayer);
 			mSelectionBounds = null;
-			mLastTouchedSelectionHandle = -1;
+			mLastTouchedSelectionHandle = HandleType.UNKNOWN;
 			mWebView.loadUrl("javascript: android.selection.clearSelection();");
 			if (mSelectionListener != null) {
 				mSelectionListener.endSelection();
@@ -138,20 +140,16 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		try {
 			final JSONObject selectionBoundsObject = new JSONObject(handleBounds);
 			final float scale = getDensityIndependentValue(mScale, ctx);
-			
-			Rect handleRect = new Rect();
-			handleRect.left = (int)(getDensityDependentValue(selectionBoundsObject.getInt("left"), ctx) * scale);
-			handleRect.top = (int)(getDensityDependentValue(selectionBoundsObject.getInt("top"), ctx) * scale);
-			handleRect.right = (int)(getDensityDependentValue(selectionBoundsObject.getInt("right"), ctx) * scale);
-			handleRect.bottom = (int)(getDensityDependentValue(selectionBoundsObject.getInt("bottom"), ctx) * scale);
-			
-			mSelectionBounds = handleRect;
-
+			Rect rect = mSelectionBoundsTemp;
+			rect.left = (int)(getDensityDependentValue(selectionBoundsObject.getInt("left"), ctx) * scale);
+			rect.top = (int)(getDensityDependentValue(selectionBoundsObject.getInt("top"), ctx) * scale);
+			rect.right = (int)(getDensityDependentValue(selectionBoundsObject.getInt("right"), ctx) * scale);
+			rect.bottom = (int)(getDensityDependentValue(selectionBoundsObject.getInt("bottom"), ctx) * scale);
+			mSelectionBounds = rect;
 			if (!isInSelectionMode()){
 				startSelectionMode();
 			}
 			drawSelectionHandles();
-			
 			if (mSelectionListener != null) {
 				mSelectionListener.selectionChanged(text);
 			}
@@ -220,34 +218,31 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 	// Interface of DragListener
 	//
 	@Override
-	public void onDragStart(DragSource source, Object info, int dragAction) {
+	public void onDragStart(DragSource source, Object info, DragBehavior dragBehavior) {
 	}
 	@Override
 	public void onDragEnd() {
 		mActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
-				MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams) mStartSelectionHandle.getLayoutParams();
-				MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams) mEndSelectionHandle.getLayoutParams();
-				
+				MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams)mStartSelectionHandle.getLayoutParams();
+				MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams)mEndSelectionHandle.getLayoutParams();
 				final Context ctx = mActivity;
 				final float scale = getDensityIndependentValue(mScale, ctx);
-				
 				float startX = startHandleParams.x - mWebView.getScrollX();
 				float startY = startHandleParams.y - mWebView.getScrollY();
 				float endX = endHandleParams.x - mWebView.getScrollX();
 				float endY = endHandleParams.y - mWebView.getScrollY();
-				
 				startX = getDensityIndependentValue(startX, ctx) / scale;
 				startY = getDensityIndependentValue(startY, ctx) / scale;
 				endX = getDensityIndependentValue(endX, ctx) / scale;
 				endY = getDensityIndependentValue(endY, ctx) / scale;
-		
-				if (mLastTouchedSelectionHandle == SELECTION_START_HANDLE && startX > 0 && startY > 0){
+				if (mLastTouchedSelectionHandle == HandleType.START && startX > 0 && startY > 0){
+					Log.v("LastTouchedStartHandle", String.format("%f, %f", startX, startY));
 					String saveStartString = String.format("javascript: android.selection.setStartPos(%f, %f);", startX, startY);
 					mWebView.loadUrl(saveStartString);
 				}
-				if (mLastTouchedSelectionHandle == SELECTION_END_HANDLE && endX > 0 && endY > 0){
+				if (mLastTouchedSelectionHandle == HandleType.END && endX > 0 && endY > 0){
 					String saveEndString = String.format("javascript: android.selection.setEndPos(%f, %f);", endX, endY);
 					mWebView.loadUrl(saveEndString);
 				}
@@ -275,17 +270,17 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		mDragController.setDragListener(this);
 		mDragController.addDropTarget(mSelectionDragLayer);
 		mSelectionDragLayer.setDragController(mDragController);
-		mStartSelectionHandle = (ImageView) this.mSelectionDragLayer.findViewById(R.id.startHandle);
-		mStartSelectionHandle.setTag(Integer.valueOf(SELECTION_START_HANDLE));
-		mEndSelectionHandle = (ImageView) this.mSelectionDragLayer.findViewById(R.id.endHandle);
-		mEndSelectionHandle.setTag(Integer.valueOf(SELECTION_END_HANDLE));
+		mStartSelectionHandle = (ImageView)mSelectionDragLayer.findViewById(R.id.startHandle);
+		mStartSelectionHandle.setTag(HandleType.START);
+		mEndSelectionHandle = (ImageView)mSelectionDragLayer.findViewById(R.id.endHandle);
+		mEndSelectionHandle.setTag(HandleType.END);
 		final OnTouchListener handleTouchListener = new OnTouchListener(){
 			@Override
 			public boolean onTouch(View v, MotionEvent event) {
 				boolean handledHere = false;
 			    if (event.getAction() == MotionEvent.ACTION_DOWN) {
 			    	handledHere = startDrag(v);
-			    	mLastTouchedSelectionHandle = (Integer)v.getTag();
+			    	mLastTouchedSelectionHandle = (HandleType)v.getTag();
 			    }
 			    return handledHere;
 			}
@@ -300,7 +295,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		public void run() {
 			final float CENTERING_RATIO = 12.0f / 48.0f;
 			
-			MyAbsoluteLayout.LayoutParams startParams = (com.blahti.drag.MyAbsoluteLayout.LayoutParams) mStartSelectionHandle.getLayoutParams();
+			MyAbsoluteLayout.LayoutParams startParams = (com.blahti.drag.MyAbsoluteLayout.LayoutParams)mStartSelectionHandle.getLayoutParams();
 			final int startWidth = mStartSelectionHandle.getDrawable().getIntrinsicWidth();
 			startParams.x = (int)(mSelectionBounds.left - startWidth * (1.0f - CENTERING_RATIO));
 			startParams.y = (int)(mSelectionBounds.top);
@@ -309,7 +304,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 			startParams.y = (startParams.y < 0) ? 0 : startParams.y;
 			mStartSelectionHandle.setLayoutParams(startParams);
 			
-			MyAbsoluteLayout.LayoutParams endParams = (com.blahti.drag.MyAbsoluteLayout.LayoutParams) mEndSelectionHandle.getLayoutParams();
+			MyAbsoluteLayout.LayoutParams endParams = (com.blahti.drag.MyAbsoluteLayout.LayoutParams)mEndSelectionHandle.getLayoutParams();
 			final int endWidth = mEndSelectionHandle.getDrawable().getIntrinsicWidth();
 			endParams.x = (int) (mSelectionBounds.right - endWidth * CENTERING_RATIO);
 			endParams.y = (int) (mSelectionBounds.bottom);
@@ -324,11 +319,8 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		return this.mSelectionDragLayer.getParent() != null;
 	}
 	private boolean startDrag(View v) {
-	    // Let the DragController initiate a drag-drop sequence.
-	    // I use the dragInfo to pass along the object being dragged.
-	    // I'm not sure how the Launcher designers do this.
 	    Object dragInfo = v;
-	    mDragController.startDrag(v, mSelectionDragLayer, dragInfo, DragController.DRAG_ACTION_MOVE);
+	    mDragController.startDrag(v, mSelectionDragLayer, dragInfo, DragBehavior.MOVE);
 	    return true;
 	}
 	

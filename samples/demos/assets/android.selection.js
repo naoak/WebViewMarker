@@ -5,7 +5,6 @@ android.selection = {};
 android.selection.selectionStartRange = null;
 android.selection.selectionEndRange = null;
 
-
 /** The last point touched by the user. { 'x': xPoint, 'y': yPoint } */
 android.selection.lastTouchPoint = null;
 
@@ -13,45 +12,38 @@ android.selection.lastTouchPoint = null;
 /** 
  * Starts the touch and saves the given x and y coordinates as last touch point
  */
-android.selection.startTouch = function(x, y){
-	
+android.selection.startTouch = function(x, y) {
 	android.selection.lastTouchPoint = {'x': x, 'y': y};
-	
 };
-
-
 
 /**
  *	Checks to see if there is a selection.
  *
  *	@return boolean
  */
-android.selection.hasSelection = function(){
+android.selection.hasSelection = function() {
 	return window.getSelection().toString().length > 0;
 };
-
 
 /**
  *	Clears the current selection.
  */
-android.selection.clearSelection = function(){
-	try{
+android.selection.clearSelection = function() {
+	try {
 		// if current selection clear it.
 	   	var sel = window.getSelection();
 	   	sel.removeAllRanges();
 	}
-	catch(err){
-		window.TextSelection.jsError(err);
+	catch (e) {
+		window.TextSelection.jsError(e);
 	}	
 };
-
 
 /**
  *	Handles the long touch action by selecting the last touched element.
  */
 android.selection.longTouch = function() {
-
-	try{
+	try {
     
     	android.selection.clearSelection();
     	
@@ -97,24 +89,20 @@ android.selection.longTouch = function() {
 	   	
 	   	android.selection.selectionChanged();
 	 }
-	 catch(err){
+	 catch (err) {
 	 	window.TextSelection.jsError(err);
 	 }
-   	
 };
 
 /**
  * Tells the app to show the context menu. 
  */
 android.selection.selectionChanged = function(){
-
-	try{
-	
+	try {
 		var sel = window.getSelection();
-		if(!sel){
+		if (!sel) {
 			return;
 		}
-		
 		var range = sel.getRangeAt(0);
 		
 		// Add spans to the selection to get page offsets
@@ -156,12 +144,10 @@ android.selection.selectionChanged = function(){
 	   	// Tell the interface that the selection changed
 	   	window.TextSelection.selectionChanged(rangyRange, text, handleBounds);
 	}
-	catch(err){
-		window.TextSelection.jsError(err);
+	catch (e) {
+		window.TextSelection.jsError(e);
 	}
 };
-
-
 
 android.selection.getRange = function() {
     var serializedRangeSelected = rangy.serializeSelection();
@@ -175,95 +161,74 @@ android.selection.getRange = function() {
     }
 }
 
-
-
 /** 
  * Returns the last touch point as a readable string.
  */
 android.selection.lastTouchPointString = function(){
-	if(android.selection.lastTouchPoint == null)
+	if (android.selection.lastTouchPoint == null)
 		return "undefined";
-		
 	return "{" + android.selection.lastTouchPoint.x + "," + android.selection.lastTouchPoint.y + "}";
 };
 
-
-
 android.selection.saveSelectionStart = function(){
-	try{
-
+	try {
 		// Save the starting point of the selection
 	   	var sel = window.getSelection();
 		var range = sel.getRangeAt(0);
-		
 		var saveRange = document.createRange();
-		
 		saveRange.setStart(range.startContainer, range.startOffset);
-		
 		android.selection.selectionStartRange = saveRange;
-	}catch(err){
-		window.TextSelection.jsError(err);
 	}
-
+	catch (e) {
+		window.TextSelection.jsError(e);
+	}
 };
 
 android.selection.saveSelectionEnd = function(){
-
-	try{
-
+	try {
 		// Save the end point of the selection
 	   	var sel = window.getSelection();
 		var range = sel.getRangeAt(0);
-		
 		var saveRange = document.createRange();
 		saveRange.setStart(range.endContainer, range.endOffset);
-		
 		android.selection.selectionEndRange = saveRange;
-	}catch(err){
-		window.TextSelection.jsError(err);
 	}
-	
+	catch (e) {
+		window.TextSelection.jsError(e);
+	}
 };
-
-
 
 /**
  * Sets the last caret position for the start handle.
  */
 android.selection.setStartPos = function(x, y){
-	
-	try{
+	try {
 		android.selection.selectionStartRange = document.caretRangeFromPoint(x, y);
-		
 		android.selection.selectBetweenHandles();
-	}catch(err){
-		window.TextSelection.jsError(err);
 	}
-
+	catch (e) {
+		window.TextSelection.jsError(e);
+	}
 };
 
 /**
  * Sets the last caret position for the end handle.
  */
 android.selection.setEndPos = function(x, y){
-	
-	try{	
+	try {	
 		android.selection.selectionEndRange = document.caretRangeFromPoint(x, y);
-		
 		android.selection.selectBetweenHandles();
-	
-	}catch(err){
-		window.TextSelection.jsError(err);
 	}
-
+	catch (e) {
+		window.TextSelection.jsError(e);
+	}
 };
 
 /**
  *	Selects all content between the two handles
  */
 android.selection.selectBetweenHandles = function(){
-	
-	try{
+	try {
 		var startCaret = android.selection.selectionStartRange;
 		var endCaret = android.selection.selectionEndRange;
 		
@@ -271,35 +236,23 @@ android.selection.selectBetweenHandles = function(){
 		if (startCaret && endCaret) {
 		
 			// If end caret comes before start caret, need to flip
-			if(startCaret.compareBoundaryPoints (Range.START_TO_END, endCaret) > 0){
+			if (startCaret.compareBoundaryPoints(Range.START_TO_END, endCaret) > 0){
 				var temp = startCaret;
 				startCaret = endCaret;
 				endCaret = temp;
-				
 				android.selection.selectionStartRange = startCaret;
 				android.selection.selectionEndRange = endCaret;
 			}
-			
 			var range = document.createRange();
 			range.setStart(startCaret.startContainer, startCaret.startOffset);
 			range.setEnd(endCaret.startContainer, endCaret.startOffset);
-			
-			
 			android.selection.clearSelection();
-				
 			var selection = window.getSelection();
 			selection.addRange(range);
-	
-			
-			
 		}
-		
 		android.selection.selectionChanged();
    	}
-   	catch(err){
-   		window.TextSelection.jsError(err);
+   	catch (e) {
+   		window.TextSelection.jsError(e);
    	}
 };
-
-
-
