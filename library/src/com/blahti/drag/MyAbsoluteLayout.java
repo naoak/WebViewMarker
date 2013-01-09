@@ -91,7 +91,7 @@ public class MyAbsoluteLayout extends ViewGroup {
         // Check against minimum height and width
         maxHeight = Math.max(maxHeight, getSuggestedMinimumHeight());
         maxWidth = Math.max(maxWidth, getSuggestedMinimumWidth());
-        
+
         setMeasuredDimension(resolveSize(maxWidth, widthMeasureSpec),
                 resolveSize(maxHeight, heightMeasureSpec));
     }
@@ -244,7 +244,7 @@ public class MyAbsoluteLayout extends ViewGroup {
             return String.valueOf(size);
         }
     } // end class
- 
+
 } // end class
 
 

@@ -42,7 +42,7 @@ public interface DropTarget {
      * 
      */
     void onDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo);
-    
+
     void onDragEnter(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo);
 
     void onDragOver(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo);

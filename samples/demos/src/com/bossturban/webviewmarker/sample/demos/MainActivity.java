@@ -20,21 +20,21 @@ public class MainActivity extends Activity {
         mWebView = (WebView)findViewById(R.id.webView);
         mTextSelectionSupport = TextSelectionSupport.support(this, mWebView);
         mTextSelectionSupport.setSelectionListener(new TextSelectionSupport.SelectionListener() {
-			@Override
-			public void startSelection() {
-			}
-			@Override
-			public void selectionChanged(String text) {
-				Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
-			}
-			@Override
-			public void endSelection() {
-			}
+            @Override
+            public void startSelection() {
+            }
+            @Override
+            public void selectionChanged(String text) {
+                Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
+            }
+            @Override
+            public void endSelection() {
+            }
         });
         mWebView.setWebViewClient(new WebViewClient() {
-        	public void onScaleChanged(WebView view, float oldScale, float newScale) {
-        		mTextSelectionSupport.onScaleChanged(oldScale, newScale);
-        	}
+            public void onScaleChanged(WebView view, float oldScale, float newScale) {
+                mTextSelectionSupport.onScaleChanged(oldScale, newScale);
+            }
         });
         mWebView.loadUrl("file:///android_asset/content.html");
     }

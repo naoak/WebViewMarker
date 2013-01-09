@@ -56,7 +56,7 @@ public class DragLayer extends MyAbsoluteLayout implements DragSource, DropTarge
     public boolean dispatchUnhandledMove(View focused, int direction) {
         return mDragController.dispatchUnhandledMove(focused, direction);
     }
-    
+
     // Interfaces of DragSource
     @Override
     public boolean allowDrag() {
@@ -69,7 +69,7 @@ public class DragLayer extends MyAbsoluteLayout implements DragSource, DropTarge
     @Override
     public void onDropCompleted(View target, boolean success) {
     }
-    
+
     // Interfaces of DropTarget
     @Override
     public void onDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {

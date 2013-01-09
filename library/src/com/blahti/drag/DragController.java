@@ -88,7 +88,7 @@ public class DragController {
 
     private InputMethodManager mInputMethodManager;
 
-    
+
     /**
      * Used to create a new DragLayer from XML.
      *
@@ -250,7 +250,7 @@ public class DragController {
      */
     void setMoveTarget(View view) {
         mMoveTarget = view;
-    }    
+    }
 
     public boolean dispatchUnhandledMove(View focused, int direction) {
         return mMoveTarget != null && mMoveTarget.dispatchUnhandledMove(focused, direction);

@@ -54,7 +54,7 @@ public class DragView extends View {
         mRegistrationY = 0;
         throw new Exception("DragView constructor permits only programatical calling");
     }
-    
+
     /**
      * Construct the drag view.
      * <p>
