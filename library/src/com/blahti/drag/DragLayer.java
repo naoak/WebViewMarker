@@ -59,7 +59,7 @@ public class DragLayer extends MyAbsoluteLayout implements DragSource, DropTarge
     
     // Interfaces of DragSource
     @Override
-	public boolean allowDrag () {
+	public boolean allowDrag() {
 	    return true;
 	}
     @Override
@@ -67,15 +67,15 @@ public class DragLayer extends MyAbsoluteLayout implements DragSource, DropTarge
         mDragController = controller;
     }
     @Override
-	public void onDropCompleted (View target, boolean success) {
+	public void onDropCompleted(View target, boolean success) {
 	}
     
     // Interfaces of DropTarget
     @Override
 	public void onDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-	    final View v = (View) dragInfo;
-	    final int w = v.getWidth ();
-	    final int h = v.getHeight ();
+	    final View v = (View)dragInfo;
+	    final int w = v.getWidth();
+	    final int h = v.getHeight();
 	    final int left = x - xOffset;
 	    final int top = y - yOffset;
 	    final DragLayer.LayoutParams lp = new DragLayer.LayoutParams (w, h, left, top);

@@ -39,6 +39,7 @@ import android.view.WindowManager;
  */
 
 public class DragView extends View {
+	private static final boolean DEBUG = false;
     private static final int PADDING_TO_SCALE = 0;
     private final int mRegistrationX;
     private final int mRegistrationY;
@@ -82,7 +83,7 @@ public class DragView extends View {
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        if (true) {
+        if (DEBUG) {
             mDebugPaint.setStyle(Paint.Style.FILL);
             mDebugPaint.setColor(0x88dd0011);
             canvas.drawRect(0, 0, getWidth(), getHeight(), mDebugPaint);
