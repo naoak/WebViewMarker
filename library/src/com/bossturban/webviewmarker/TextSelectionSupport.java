@@ -42,7 +42,8 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		UNKNOWN
 	}
 	private static final String TAG = "SelectionSupport";
-	private final int SCROLLING_THRESHOLD = 10;
+	private static final float CENTERING_SHORTER_MARGIN_RATIO = 12.0f / 48.0f;
+	private static final int SCROLLING_THRESHOLD = 10;
 	
 	private Activity mActivity;
 	private WebView mWebView;
@@ -230,9 +231,9 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 				MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams)mEndSelectionHandle.getLayoutParams();
 				final Context ctx = mActivity;
 				final float scale = getDensityIndependentValue(mScale, ctx);
-				float startX = startHandleParams.x - mWebView.getScrollX();
+				float startX = startHandleParams.x - mWebView.getScrollX() + mStartSelectionHandle.getWidth() * (1 - CENTERING_SHORTER_MARGIN_RATIO);
 				float startY = startHandleParams.y - mWebView.getScrollY();
-				float endX = endHandleParams.x - mWebView.getScrollX();
+				float endX = endHandleParams.x - mWebView.getScrollX() + mEndSelectionHandle.getWidth() * CENTERING_SHORTER_MARGIN_RATIO;
 				float endY = endHandleParams.y - mWebView.getScrollY();
 				startX = getDensityIndependentValue(startX, ctx) / scale;
 				startY = getDensityIndependentValue(startY, ctx) / scale;
@@ -299,22 +300,20 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 	}
 	private Runnable drawSelectionHandlesHandler = new Runnable(){
 		public void run() {
-			final float CENTERING_RATIO = 12.0f / 48.0f;
-			
 			MyAbsoluteLayout.LayoutParams startParams = (com.blahti.drag.MyAbsoluteLayout.LayoutParams)mStartSelectionHandle.getLayoutParams();
 			final int startWidth = mStartSelectionHandle.getDrawable().getIntrinsicWidth();
-			startParams.x = (int)(mSelectionBounds.left - startWidth * (1.0f - CENTERING_RATIO));
+			startParams.x = (int)(mSelectionBounds.left - startWidth * (1.0f - CENTERING_SHORTER_MARGIN_RATIO));
 			startParams.y = (int)(mSelectionBounds.top);
-			final int startMinLeft = -(int)(startWidth * (1 - CENTERING_RATIO));
+			final int startMinLeft = -(int)(startWidth * (1 - CENTERING_SHORTER_MARGIN_RATIO));
 			startParams.x = (startParams.x < startMinLeft) ? startMinLeft : startParams.x;
 			startParams.y = (startParams.y < 0) ? 0 : startParams.y;
 			mStartSelectionHandle.setLayoutParams(startParams);
 			
 			MyAbsoluteLayout.LayoutParams endParams = (com.blahti.drag.MyAbsoluteLayout.LayoutParams)mEndSelectionHandle.getLayoutParams();
 			final int endWidth = mEndSelectionHandle.getDrawable().getIntrinsicWidth();
-			endParams.x = (int) (mSelectionBounds.right - endWidth * CENTERING_RATIO);
+			endParams.x = (int) (mSelectionBounds.right - endWidth * CENTERING_SHORTER_MARGIN_RATIO);
 			endParams.y = (int) (mSelectionBounds.bottom);
-			final int endMinLeft = -(int)(endWidth * (1- CENTERING_RATIO));
+			final int endMinLeft = -(int)(endWidth * (1- CENTERING_SHORTER_MARGIN_RATIO));
 			endParams.x = (endParams.x < endMinLeft) ? endMinLeft : endParams.x;
 			endParams.y = (endParams.y < 0) ? 0 : endParams.y;
 			mEndSelectionHandle.setLayoutParams(endParams);
