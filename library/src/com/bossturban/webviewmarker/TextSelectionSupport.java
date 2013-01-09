@@ -43,6 +43,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
     }
     private static final String TAG = "SelectionSupport";
     private static final float CENTERING_SHORTER_MARGIN_RATIO = 12.0f / 48.0f;
+    private static final int JACK_UP_PADDING = 2;
     private static final int SCROLLING_THRESHOLD = 10;
 
     private Activity mActivity;
@@ -232,9 +233,9 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
                 final Context ctx = mActivity;
                 final float scale = getDensityIndependentValue(mScale, ctx);
                 float startX = startHandleParams.x - mWebView.getScrollX() + mStartSelectionHandle.getWidth() * (1 - CENTERING_SHORTER_MARGIN_RATIO);
-                float startY = startHandleParams.y - mWebView.getScrollY();
+                float startY = startHandleParams.y - mWebView.getScrollY() - JACK_UP_PADDING;
                 float endX = endHandleParams.x - mWebView.getScrollX() + mEndSelectionHandle.getWidth() * CENTERING_SHORTER_MARGIN_RATIO;
-                float endY = endHandleParams.y - mWebView.getScrollY();
+                float endY = endHandleParams.y - mWebView.getScrollY() - JACK_UP_PADDING;
                 startX = getDensityIndependentValue(startX, ctx) / scale;
                 startY = getDensityIndependentValue(startY, ctx) / scale;
                 endX = getDensityIndependentValue(endX, ctx) / scale;
