@@ -44,15 +44,10 @@ android.selection.clearSelection = function() {
  */
 android.selection.longTouch = function() {
     try {
-
         android.selection.clearSelection();
-
-        // if current selection clear it.
         var sel = window.getSelection();
-
         var range = document.caretRangeFromPoint(android.selection.lastTouchPoint.x, android.selection.lastTouchPoint.y);
         range.expand("word");
-
         var text = range.toString();
         if (text.length == 1) {
             var baseKind = jpntext.kind(text);
@@ -66,7 +61,6 @@ android.selection.longTouch = function() {
                     range.setEnd(range.endContainer, range.endOffset - 1);
                 }
                 catch (e) {
-                    // pass
                 }
                 try {
                     do {
@@ -77,17 +71,15 @@ android.selection.longTouch = function() {
                     range.setStart(range.startContainer, range.startOffset + 1);
                 }
                 catch (e) {
-                    // pass
                 }
             }
         }
-
-        sel.addRange(range);
-
-        android.selection.saveSelectionStart();
-        android.selection.saveSelectionEnd();
-
-        android.selection.selectionChanged(true);
+        if (text.length > 0) {
+            sel.addRange(range);
+            android.selection.saveSelectionStart();
+            android.selection.saveSelectionEnd();
+            android.selection.selectionChanged(true);
+        }
      }
      catch (err) {
         window.TextSelection.jsError(err);
