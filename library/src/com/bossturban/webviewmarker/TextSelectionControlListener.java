@@ -13,8 +13,9 @@ public interface TextSelectionControlListener {
 	 * @param range
 	 * @param text
 	 * @param handleBounds
+	 * @param isReallyChanged
 	 */
-	void selectionChanged(String range, String text, String handleBounds);
+	void selectionChanged(String range, String text, String handleBounds, boolean isReallyChanged);
 	
 	void setContentWidth(float contentWidth);
 }

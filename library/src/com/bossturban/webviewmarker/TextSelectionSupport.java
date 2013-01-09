@@ -123,11 +123,11 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		Log.d(TAG, "JSLog: " + message);
 	}
 	@Override
-	public void startSelectionMode(){
+	public void startSelectionMode() {
 		mActivity.runOnUiThread(mStartSelectionModeHandler);
 	}
 	@Override
-	public void endSelectionMode(){
+	public void endSelectionMode() {
 		mActivity.runOnUiThread(endSelectionModeHandler);
 	}
 	@Override
@@ -135,7 +135,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		mContentWidth = (int)getDensityDependentValue(contentWidth, mActivity);
 	}
 	@Override
-	public void selectionChanged(String range, String text, String handleBounds){
+	public void selectionChanged(String range, String text, String handleBounds, boolean isReallyChanged){
 		final Context ctx = mActivity;
 		try {
 			final JSONObject selectionBoundsObject = new JSONObject(handleBounds);
@@ -150,7 +150,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 				startSelectionMode();
 			}
 			drawSelectionHandles();
-			if (mSelectionListener != null) {
+			if (mSelectionListener != null && isReallyChanged) {
 				mSelectionListener.selectionChanged(text);
 			}
 		}
@@ -225,6 +225,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 		mActivity.runOnUiThread(new Runnable() {
 			@Override
 			public void run() {
+				Log.v(TAG, ">> onDragEnd");
 				MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams)mStartSelectionHandle.getLayoutParams();
 				MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams)mEndSelectionHandle.getLayoutParams();
 				final Context ctx = mActivity;
@@ -238,14 +239,19 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 				endX = getDensityIndependentValue(endX, ctx) / scale;
 				endY = getDensityIndependentValue(endY, ctx) / scale;
 				if (mLastTouchedSelectionHandle == HandleType.START && startX > 0 && startY > 0){
-					Log.v("LastTouchedStartHandle", String.format("%f, %f", startX, startY));
+					Log.v(TAG, "LastTouchedStartHandle: " + String.format("%f, %f", startX, startY));
 					String saveStartString = String.format("javascript: android.selection.setStartPos(%f, %f);", startX, startY);
 					mWebView.loadUrl(saveStartString);
 				}
-				if (mLastTouchedSelectionHandle == HandleType.END && endX > 0 && endY > 0){
+				else if (mLastTouchedSelectionHandle == HandleType.END && endX > 0 && endY > 0){
+					Log.v(TAG, "LastTouchedEndHandle: " + String.format("%f, %f", endX, endY));
 					String saveEndString = String.format("javascript: android.selection.setEndPos(%f, %f);", endX, endY);
 					mWebView.loadUrl(saveEndString);
 				}
+				else {
+					mWebView.loadUrl("javascript: android.selection.restoreStartEndPos();");
+				}
+				Log.v(TAG, "<< onDragEnd");
 			}
 		});
 	}

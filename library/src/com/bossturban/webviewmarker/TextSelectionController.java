@@ -37,9 +37,9 @@ public class TextSelectionController {
 		}
 	}
 	@JavascriptInterface
-	public void selectionChanged(String range, String text, String handleBounds) {
+	public void selectionChanged(String range, String text, String handleBounds, boolean isReallyChanged) {
 		if (mListener != null) {
-			mListener.selectionChanged(range, text, handleBounds);
+			mListener.selectionChanged(range, text, handleBounds, isReallyChanged);
 		}
 	}
 	@JavascriptInterface

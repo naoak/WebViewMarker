@@ -87,7 +87,7 @@ android.selection.longTouch = function() {
 	   	android.selection.saveSelectionStart();
 	   	android.selection.saveSelectionEnd();
 	   	
-	   	android.selection.selectionChanged();
+	   	android.selection.selectionChanged(true);
 	 }
 	 catch (err) {
 	 	window.TextSelection.jsError(err);
@@ -97,7 +97,7 @@ android.selection.longTouch = function() {
 /**
  * Tells the app to show the context menu. 
  */
-android.selection.selectionChanged = function(){
+android.selection.selectionChanged = function(isReallyChanged) {
 	try {
 		var sel = window.getSelection();
 		if (!sel) {
@@ -110,19 +110,17 @@ android.selection.selectionChanged = function(){
 		var selectionEnd = $("<span id=\"selectionEnd\"></span>");
 	    
 		var startRange = document.createRange();
-    	startRange.setStart(range.startContainer, range.startOffset);
-    	startRange.insertNode(selectionStart[0]);
+		startRange.setStart(range.startContainer, range.startOffset);
+		startRange.insertNode(selectionStart[0]);
 		
 		var endRange = document.createRange();
-    	endRange.setStart(range.endContainer, range.endOffset);
-    	endRange.insertNode(selectionEnd[0]);
-    	
-    	window.TextSelection.jsLog("range: " + range.startOffset + ", " + range.endOffest);
+		endRange.setStart(range.endContainer, range.endOffset);
+		endRange.insertNode(selectionEnd[0]);
+		
 	   	var handleBounds = "{'left': " + (selectionStart.offset().left) + ", ";
 	   	handleBounds += "'top': " + (selectionStart.offset().top + selectionStart.height()) + ", ";
 	   	handleBounds += "'right': " + (selectionEnd.offset().left) + ", ";
 	   	handleBounds += "'bottom': " + (selectionEnd.offset().top + selectionEnd.height()) + "}";
-	   	window.TextSelection.jsLog("handle: " + handleBounds);
 	   	
 	   	// Pull the spans
 	   	selectionStart.remove();
@@ -140,9 +138,9 @@ android.selection.selectionChanged = function(){
 	   	
 	   	// Set the content width
 	   	window.TextSelection.setContentWidth(document.body.clientWidth);
-	   	
+		   	
 	   	// Tell the interface that the selection changed
-	   	window.TextSelection.selectionChanged(rangyRange, text, handleBounds);
+	   	window.TextSelection.selectionChanged(rangyRange, text, handleBounds, isReallyChanged);
 	}
 	catch (e) {
 		window.TextSelection.jsError(e);
@@ -203,8 +201,7 @@ android.selection.saveSelectionEnd = function(){
  */
 android.selection.setStartPos = function(x, y){
 	try {
-		android.selection.selectionStartRange = document.caretRangeFromPoint(x, y);
-		android.selection.selectBetweenHandles();
+		android.selection.selectBetweenHandles(document.caretRangeFromPoint(x, y), android.selection.selectionEndRange);
 	}
 	catch (e) {
 		window.TextSelection.jsError(e);
@@ -216,8 +213,16 @@ android.selection.setStartPos = function(x, y){
  */
 android.selection.setEndPos = function(x, y){
 	try {	
-		android.selection.selectionEndRange = document.caretRangeFromPoint(x, y);
-		android.selection.selectBetweenHandles();
+		android.selection.selectBetweenHandles(android.selection.selectionStartRange, document.caretRangeFromPoint(x, y));
+	}
+	catch (e) {
+		window.TextSelection.jsError(e);
+	}
+};
+
+android.selection.restoreStartEndPos = function() {
+	try {
+		android.selection.selectBetweenHandles(android.selection.selectionEndRange, android.selection.selectionStartRange);
 	}
 	catch (e) {
 		window.TextSelection.jsError(e);
@@ -227,21 +232,17 @@ android.selection.setEndPos = function(x, y){
 /**
  *	Selects all content between the two handles
  */
-android.selection.selectBetweenHandles = function(){
+android.selection.selectBetweenHandles = function(startCaret, endCaret) {
 	try {
-		var startCaret = android.selection.selectionStartRange;
-		var endCaret = android.selection.selectionEndRange;
-		
-		// If we have two carets, update the selection
 		if (startCaret && endCaret) {
-		
-			// If end caret comes before start caret, need to flip
-			if (startCaret.compareBoundaryPoints(Range.START_TO_END, endCaret) > 0){
-				var temp = startCaret;
-				startCaret = endCaret;
-				endCaret = temp;
+			var rightOrder = startCaret.compareBoundaryPoints(Range.START_TO_END, endCaret) <= 0;
+			if (rightOrder) {
 				android.selection.selectionStartRange = startCaret;
 				android.selection.selectionEndRange = endCaret;
+			}
+			else {
+				startCaret = android.selection.selectionStartRange;
+				endCaret = android.selection.selectionEndRange;
 			}
 			var range = document.createRange();
 			range.setStart(startCaret.startContainer, startCaret.startOffset);
@@ -249,8 +250,12 @@ android.selection.selectBetweenHandles = function(){
 			android.selection.clearSelection();
 			var selection = window.getSelection();
 			selection.addRange(range);
+			android.selection.selectionChanged(rightOrder);
 		}
-		android.selection.selectionChanged();
+		else {
+			android.selection.selectionStartRange = startCaret;
+			android.selection.selectionEndRange = endCaret;
+		}
    	}
    	catch (e) {
    		window.TextSelection.jsError(e);
