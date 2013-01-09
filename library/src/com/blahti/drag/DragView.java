@@ -39,7 +39,7 @@ import android.view.WindowManager;
  */
 
 public class DragView extends View {
-	private static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
     private static final int PADDING_TO_SCALE = 0;
     private final int mRegistrationX;
     private final int mRegistrationY;
@@ -49,10 +49,10 @@ public class DragView extends View {
     private WindowManager mWindowManager;
 
     public DragView(Context context) throws Exception {
-    	super(context);
-    	mRegistrationX = 0;
-    	mRegistrationY = 0;
-    	throw new Exception("DragView constructor permits only programatical calling");
+        super(context);
+        mRegistrationX = 0;
+        mRegistrationY = 0;
+        throw new Exception("DragView constructor permits only programatical calling");
     }
     
     /**

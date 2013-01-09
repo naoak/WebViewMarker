@@ -59,43 +59,43 @@ public class DragLayer extends MyAbsoluteLayout implements DragSource, DropTarge
     
     // Interfaces of DragSource
     @Override
-	public boolean allowDrag() {
-	    return true;
-	}
+    public boolean allowDrag() {
+        return true;
+    }
     @Override
     public void setDragController(DragController controller) {
         mDragController = controller;
     }
     @Override
-	public void onDropCompleted(View target, boolean success) {
-	}
+    public void onDropCompleted(View target, boolean success) {
+    }
     
     // Interfaces of DropTarget
     @Override
-	public void onDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-	    final View v = (View)dragInfo;
-	    final int w = v.getWidth();
-	    final int h = v.getHeight();
-	    final int left = x - xOffset;
-	    final int top = y - yOffset;
-	    final DragLayer.LayoutParams lp = new DragLayer.LayoutParams (w, h, left, top);
-	    updateViewLayout(v, lp);
-	}
+    public void onDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
+        final View v = (View)dragInfo;
+        final int w = v.getWidth();
+        final int h = v.getHeight();
+        final int left = x - xOffset;
+        final int top = y - yOffset;
+        final DragLayer.LayoutParams lp = new DragLayer.LayoutParams (w, h, left, top);
+        updateViewLayout(v, lp);
+    }
     @Override
-	public void onDragEnter(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-	}
+    public void onDragEnter(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
+    }
     @Override
-	public void onDragOver(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-	}
+    public void onDragOver(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
+    }
     @Override
-	public void onDragExit(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-	}
+    public void onDragExit(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
+    }
     @Override
-	public boolean acceptDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
-	    return true;
-	}
+    public boolean acceptDrop(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo) {
+        return true;
+    }
     @Override
-	public Rect estimateDropLocation(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo, Rect recycle) {
-	    return null;
-	}
+    public Rect estimateDropLocation(DragSource source, int x, int y, int xOffset, int yOffset, DragView dragView, Object dragInfo, Rect recycle) {
+        return null;
+    }
 }

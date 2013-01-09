@@ -43,8 +43,8 @@ import java.util.ArrayList;
 
 public class DragController {
     public enum DragBehavior {
-    	MOVE,	// indicates the drag is move
-    	COPY	// indicates the drag is copy
+        MOVE,   // indicates the drag is move
+        COPY    // indicates the drag is copy
     }
     public static final String TAG = "DragController";
 
@@ -110,19 +110,19 @@ public class DragController {
      */
     public void startDrag(View v, DragSource source, Object dragInfo, DragBehavior dragBehavior) {
         if (source.allowDrag()) {
-	        mOriginator = v;
-	        final Bitmap b = getViewBitmap(v);
-	        if (b != null) {
-		        final int[] loc = mCoordinatesTemp;
-		        v.getLocationOnScreen(loc);
-		        final int screenX = loc[0];
-		        final int screenY = loc[1];
-		        startDrag(b, screenX, screenY, 0, 0, b.getWidth(), b.getHeight(), source, dragInfo, dragBehavior);
-		        b.recycle();
-		        if (dragBehavior == DragBehavior.MOVE) {
-		            v.setVisibility(View.GONE);
-		        }
-	        }
+            mOriginator = v;
+            final Bitmap b = getViewBitmap(v);
+            if (b != null) {
+                final int[] loc = mCoordinatesTemp;
+                v.getLocationOnScreen(loc);
+                final int screenX = loc[0];
+                final int screenY = loc[1];
+                startDrag(b, screenX, screenY, 0, 0, b.getWidth(), b.getHeight(), source, dragInfo, dragBehavior);
+                b.recycle();
+                if (dragBehavior == DragBehavior.MOVE) {
+                    v.setVisibility(View.GONE);
+                }
+            }
         }
     }
 
