@@ -227,7 +227,6 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.v(TAG, ">> onDragEnd");
                 MyAbsoluteLayout.LayoutParams startHandleParams = (MyAbsoluteLayout.LayoutParams)mStartSelectionHandle.getLayoutParams();
                 MyAbsoluteLayout.LayoutParams endHandleParams = (MyAbsoluteLayout.LayoutParams)mEndSelectionHandle.getLayoutParams();
                 final Context ctx = mActivity;
@@ -241,19 +240,16 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
                 endX = getDensityIndependentValue(endX, ctx) / scale;
                 endY = getDensityIndependentValue(endY, ctx) / scale;
                 if (mLastTouchedSelectionHandle == HandleType.START && startX > 0 && startY > 0){
-                    Log.v(TAG, "LastTouchedStartHandle: " + String.format("%f, %f", startX, startY));
                     String saveStartString = String.format("javascript: android.selection.setStartPos(%f, %f);", startX, startY);
                     mWebView.loadUrl(saveStartString);
                 }
                 else if (mLastTouchedSelectionHandle == HandleType.END && endX > 0 && endY > 0){
-                    Log.v(TAG, "LastTouchedEndHandle: " + String.format("%f, %f", endX, endY));
                     String saveEndString = String.format("javascript: android.selection.setEndPos(%f, %f);", endX, endY);
                     mWebView.loadUrl(saveEndString);
                 }
                 else {
                     mWebView.loadUrl("javascript: android.selection.restoreStartEndPos();");
                 }
-                Log.v(TAG, "<< onDragEnd");
             }
         });
     }
