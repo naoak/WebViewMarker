@@ -181,11 +181,16 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
         case MotionEvent.ACTION_UP:
             if (!mScrolling) {
                 endSelectionMode();
+                return false;
             }
             mScrollDiffX = 0;
             mScrollDiffY = 0;
             mScrolling = false;
-            break;
+            //
+            // Fixes 4.4 double selection
+            // See: http://stackoverflow.com/questions/20391783/how-to-avoid-default-selection-on-long-press-in-android-kitkat-4-4
+            //
+            return true;
         case MotionEvent.ACTION_MOVE:
             mScrollDiffX += (xPoint - mLastTouchX);
             mScrollDiffY += (yPoint - mLastTouchY);
