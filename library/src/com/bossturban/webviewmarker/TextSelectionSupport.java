@@ -25,6 +25,7 @@ import android.view.View.OnTouchListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
@@ -169,7 +170,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
         final Context ctx = mActivity;
         float xPoint = getDensityIndependentValue(event.getX(), ctx) / getDensityIndependentValue(mScale, ctx);
         float yPoint = getDensityIndependentValue(event.getY(), ctx) / getDensityIndependentValue(mScale, ctx);
-        
+
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
             final String startTouchUrl = String.format("javascript:android.selection.startTouch(%f, %f);", xPoint, yPoint);
@@ -254,16 +255,15 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
         });
     }
 
-    @SuppressWarnings("deprecation")
     @SuppressLint("SetJavaScriptEnabled")
     private void setup(){
         mScale = mActivity.getResources().getDisplayMetrics().density;
         mWebView.setOnLongClickListener(this);
         mWebView.setOnTouchListener(this);
-        mWebView.getSettings().setJavaScriptEnabled(true);
-        mWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-        mWebView.getSettings().setPluginsEnabled(true);
-        mSelectionController = new TextSelectionController(this);       
+        final WebSettings settings = mWebView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        settings.setJavaScriptCanOpenWindowsAutomatically(true);
+        mSelectionController = new TextSelectionController(this);
         mWebView.addJavascriptInterface(mSelectionController, TextSelectionController.INTERFACE_NAME);
         createSelectionLayer(mActivity);
     }
