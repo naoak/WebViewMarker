@@ -1,7 +1,7 @@
 WebViewMarker
 =============
 
-Text selection support library for Android WebView. The core logic is the same as BTAndroidWebViewSelection.
+Text selection support library for Android WebView. The core logic is the same as [BTAndroidWebViewSelection](https://github.com/btate/BTAndroidWebViewSelection).
 
 ## What's the difference?
 - More modular (not inherit webview)
