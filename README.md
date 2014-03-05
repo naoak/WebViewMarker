@@ -12,5 +12,5 @@ Text selection support library for Android WebView. The core logic is the same a
 ## Requirement
 Tested on API 8-19 (Android 2.2-4.4.2).
 
-## Hot to use
+## How to use
 See `samples/demos` directory.
