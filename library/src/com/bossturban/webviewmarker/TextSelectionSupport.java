@@ -31,6 +31,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -197,7 +198,12 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
         case MotionEvent.ACTION_UP:
             if (!mScrolling) {
                 endSelectionMode();
-                return false;
+                //
+                // Fixes 4.4 double selection
+                // See: http://stackoverflow.com/questions/20391783/how-to-avoid-default-selection-on-long-press-in-android-kitkat-4-4
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    return false;
+                }
             }
             mScrollDiffX = 0;
             mScrollDiffY = 0;
@@ -205,8 +211,10 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
             //
             // Fixes 4.4 double selection
             // See: http://stackoverflow.com/questions/20391783/how-to-avoid-default-selection-on-long-press-in-android-kitkat-4-4
-            //
-            return true;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            	return true;
+            }
+            break;
         case MotionEvent.ACTION_MOVE:
             mScrollDiffX += (xPoint - mLastTouchX);
             mScrollDiffY += (yPoint - mLastTouchY);
@@ -230,8 +238,10 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
     //
     @Override 
     public boolean onLongClick(View v){
-        mWebView.loadUrl("javascript:android.selection.longTouch();");
-        mScrolling = true;
+        if (!isInSelectionMode()) {
+            mWebView.loadUrl("javascript:android.selection.longTouch();");
+            mScrolling = true;
+        }
         if (mOnLongClickListener != null) {
             mOnLongClickListener.onLongClick(v);
         }
