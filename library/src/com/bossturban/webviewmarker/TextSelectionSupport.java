@@ -67,8 +67,6 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
     private Activity mActivity;
     private WebView mWebView;
     private SelectionListener mSelectionListener;
-    private OnTouchListener mOnTouchListener;
-    private OnLongClickListener mOnLongClickListener;
     private DragLayer mSelectionDragLayer;
     private DragController mDragController;
     private ImageView mStartSelectionHandle;
@@ -225,12 +223,7 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
             }
             break;
         }
-        if (mOnTouchListener != null) {
-            return mOnTouchListener.onTouch(v, event);
-        }
-        else {
-            return false;
-        }
+        return false;
     }
 
     //
@@ -241,9 +234,6 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
         if (!isInSelectionMode()) {
             mWebView.loadUrl("javascript:android.selection.longTouch();");
             mScrolling = true;
-        }
-        if (mOnLongClickListener != null) {
-            mOnLongClickListener.onLongClick(v);
         }
         return true;
     }
