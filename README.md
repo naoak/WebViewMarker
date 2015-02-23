@@ -1,3 +1,5 @@
+Cloned from the original to fix a couple of errors. See commit notes. - gregko.
+
 WebViewMarker
 =============
 
