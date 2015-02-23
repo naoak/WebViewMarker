@@ -46,6 +46,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.widget.ImageView;
 
+import java.util.Locale;
+
 @SuppressLint("DefaultLocale")
 public class TextSelectionSupport implements TextSelectionControlListener, OnTouchListener, OnLongClickListener, DragListener {
     public interface SelectionListener {
@@ -188,7 +190,10 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
 
         switch (event.getAction()) {
         case MotionEvent.ACTION_DOWN:
-            final String startTouchUrl = String.format("javascript:android.selection.startTouch(%f, %f);", xPoint, yPoint);
+            // Essential to add Locale.US parameter to String.format, else does not work on systems
+            // with default locale different, with other floating point notations, e.g. comma instead
+            // of decimal point.
+            final String startTouchUrl = String.format(Locale.US, "javascript:android.selection.startTouch(%f, %f);", xPoint, yPoint);
             mLastTouchX = xPoint;
             mLastTouchY = yPoint;
             mWebView.loadUrl(startTouchUrl);
@@ -262,11 +267,11 @@ public class TextSelectionSupport implements TextSelectionControlListener, OnTou
                 endX = getDensityIndependentValue(endX, ctx) / scale;
                 endY = getDensityIndependentValue(endY, ctx) / scale;
                 if (mLastTouchedSelectionHandle == HandleType.START && startX > 0 && startY > 0){
-                    String saveStartString = String.format("javascript: android.selection.setStartPos(%f, %f);", startX, startY);
+                    String saveStartString = String.format(Locale.US, "javascript: android.selection.setStartPos(%f, %f);", startX, startY);
                     mWebView.loadUrl(saveStartString);
                 }
                 else if (mLastTouchedSelectionHandle == HandleType.END && endX > 0 && endY > 0){
-                    String saveEndString = String.format("javascript: android.selection.setEndPos(%f, %f);", endX, endY);
+                    String saveEndString = String.format(Locale.US, "javascript: android.selection.setEndPos(%f, %f);", endX, endY);
                     mWebView.loadUrl(saveEndString);
                 }
                 else {
