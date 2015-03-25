@@ -14,3 +14,11 @@ Tested on API 8-19 (Android 2.2-4.4.2).
 
 ## How to use
 See `samples/demos` directory.
+
+## Libraries
+This project uses the following libraries.
+- [rangy](https://github.com/timdown/rangy) by Tim Down
+- [drag and drop](https://blahti.wordpress.com/2011/01/17/moving-views-part-2/) library by Bill Lahti
+
+## License
+MIT License.
