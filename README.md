@@ -17,6 +17,7 @@ See `samples/demos` directory.
 
 ##How to add to Gradle
 Add the following to your build file:
+```
 dependencies {
     //other dependencies also go here
     compile 'com.github.naoak:WebViewMarker:v0.1.3'
@@ -25,6 +26,7 @@ repositories {
     //other repositories
     maven { url "https://jitpack.io" }
 }
+```
 Then just sync Gradle with the project
 
 ## Included Libraries
